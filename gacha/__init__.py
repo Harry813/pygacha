@@ -1,10 +1,14 @@
-from gacha.base import GachaRarity, GachaPool
-from gacha.simple import SimpleGacha
-
+from gacha.base import GachaPoolBase
+from gacha.drgt import DRGTRarity, DRGTGacha
+from gacha.simple import SimpleGacha, SimpleRarity
 
 __all__ = [
-    'GachaRarity',
-    'GachaPool',
+    'GachaPoolBase',
+
+    'SimpleRarity',
     'SimpleGacha',
+
+    'DRGTRarity',
+    'DRGTGacha',
 ]
 
