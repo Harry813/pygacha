@@ -9,7 +9,7 @@ rare = SimpleRarity("Rare", 0.3)
 epic = SimpleRarity("Epic", 0.15)
 legendary = SimpleRarity("Legendary", 0.05)
 
-sword_c = GachaItem("C Sword", common, "Sword")
+sword_c = GachaItem("C Sword", common, "Sword", adjusted_modifier=0.8)
 shield_c = GachaItem("C Shield", common, "Shield")
 spear_r = GachaItem("R Spear", rare, "Spear")
 armor_r = GachaItem("R Armor", rare, "Armor")

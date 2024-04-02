@@ -14,7 +14,6 @@ class SimpleGacha(GachaPoolBase):
     def _draw(self):
         total_weight = sum(item.adjusted_weight for item in self.items)
         rand_val = random.uniform(0, total_weight)
-        print(rand_val, total_weight)
 
         current_sum = 0
         for item in self.items:
