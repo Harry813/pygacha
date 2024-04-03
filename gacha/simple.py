@@ -1,7 +1,7 @@
 import random
 
 from gacha import GachaPoolBase
-from gacha.base import GachaRarityBase, GachaItem
+from gacha.base import GachaRarityBase, GachaItem, FlexRarity
 
 
 class SimpleRarity(GachaRarityBase):
@@ -11,14 +11,13 @@ class SimpleRarity(GachaRarityBase):
 
 
 class SimpleItem(GachaItem):
-    def __init__(self, name, rarity: SimpleRarity, inst=None, adjusted_modifier=0):
+    def __init__(self, name, rarity: SimpleRarity | FlexRarity, inst=None, adjusted_modifier=0):
         super().__init__(name, rarity, inst, adjusted_modifier)
 
 
 class SimpleGacha(GachaPoolBase):
     def _draw_rarity(self):
         total_weight = sum(rarity.base_weight for rarity in self.rarity_map.keys())
-        print(total_weight)
         pick = random.uniform(0, total_weight)
         current = 0
         for rarity in self.rarity_map.keys():
@@ -54,7 +53,5 @@ class SimpleGacha(GachaPoolBase):
 
     def _draw(self):
         rarity = self._draw_rarity()
-        print(rarity, end=" ")
         item = self._draw_item(rarity)
-        print(item)
         return item

@@ -36,9 +36,10 @@ class GachaPoolBase(ABC):
 
     def show_items(self):
         for k, v in self.rarity_map.items():
-            print(k)
+            print(k, f"{k.base_weight * 100:.8f}%")
             for i in v:
                 print("-", i)
+            print("\n")
 
     def add_item(self, *item):
         for i in item:
@@ -46,6 +47,18 @@ class GachaPoolBase(ABC):
             if i.rarity not in self.rarity_map:
                 self.rarity_map[i.rarity] = []
             self.rarity_map[i.rarity].append(i)
+
+    def _fill_flex_rarity(self):
+        rarities = list(self.rarity_map.keys())
+        total_weight = sum([r.base_weight for r in rarities])
+        flex_count = sum([isinstance(r, FlexRarity) for r in rarities])
+
+        if any([r.base_weight < 1 for r in rarities]) and any([isinstance(r, FlexRarity) for r in rarities]):
+            for r in rarities:
+                if isinstance(r, FlexRarity):
+                    r.base_weight = (1 - total_weight) / flex_count
+        else:
+            raise ValueError(f"Total Weight {total_weight} (Should Be Equal to 1) and No FlexRarity found.")
 
     @abstractmethod
     def _draw(self):
@@ -55,6 +68,7 @@ class GachaPoolBase(ABC):
         pass
 
     def draw(self, start_draw_count: int = 0, draw_count: int = 1):
+        self._fill_flex_rarity()
         self.pre_draw()
 
         self.draw_count = start_draw_count
@@ -66,3 +80,9 @@ class GachaPoolBase(ABC):
                 'item': self._draw()
             })
         return results
+
+
+class FlexRarity(GachaRarityBase):
+    def __init__(self, name):
+        super().__init__(name)
+        self.base_weight = 0

@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 
 from gacha import SimpleRarity, SimpleGacha
-from gacha.base import GachaItem
+from gacha.base import GachaItem, FlexRarity
 from gacha.simple import SimpleItem
 
 # 定义稀有度
-common = SimpleRarity("Common", 0.5)
+common = FlexRarity("Common")
 rare = SimpleRarity("Rare", 0.3)
 epic = SimpleRarity("Epic", 0.15)
 legendary = SimpleRarity("Legendary", 0.05)
