@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class GachaItem:
-    def __init__(self, name, rarity: "GachaRarityBase", inst=None, adjusted_modifier=0):
+    def __init__(self, name, rarity: "GachaRarityBase", inst=None, adjusted_modifier: float = 0):
         """
         :param name: 稀有度名称
         :param rarity: 稀有度类型
@@ -27,6 +27,11 @@ class GachaRarityBase(ABC):
     def __str__(self):
         return self.name
 
+    @property
+    @abstractmethod
+    def weight(self):
+        pass
+
 
 class GachaPoolBase(ABC):
     def __init__(self):
@@ -36,7 +41,7 @@ class GachaPoolBase(ABC):
 
     def show_items(self):
         for k, v in self.rarity_map.items():
-            print(k, f"{k.base_weight * 100:.8f}%")
+            print(k, f"{k.weight * 100:.8f}%")
             for i in v:
                 print("-", i)
             print("\n")
@@ -50,19 +55,28 @@ class GachaPoolBase(ABC):
 
     def _fill_flex_rarity(self):
         rarities = list(self.rarity_map.keys())
-        total_weight = sum([r.base_weight for r in rarities])
+        total_weight = sum([r.weight for r in rarities])
         flex_count = sum([isinstance(r, FlexRarity) for r in rarities])
 
-        if any([r.base_weight < 1 for r in rarities]) and any([isinstance(r, FlexRarity) for r in rarities]):
+        if any([r.weight < 1 for r in rarities]) and any([isinstance(r, FlexRarity) for r in rarities]):
             for r in rarities:
                 if isinstance(r, FlexRarity):
-                    r.base_weight = (1 - total_weight) / flex_count
+                    r.weight = (1 - total_weight) / flex_count
         else:
             raise ValueError(f"Total Weight {total_weight} (Should Be Equal to 1) and No FlexRarity found.")
 
     @abstractmethod
-    def _draw(self):
+    def _draw_rarity(self):
         pass
+
+    @abstractmethod
+    def _draw_item(self, rarity):
+        pass
+
+    def _draw(self):
+        rarity = self._draw_rarity()
+        item = self._draw_item(rarity)
+        return item
 
     def pre_draw(self):
         pass
@@ -86,3 +100,11 @@ class FlexRarity(GachaRarityBase):
     def __init__(self, name):
         super().__init__(name)
         self.base_weight = 0
+
+    @property
+    def weight(self):
+        return self.base_weight
+
+    @weight.setter
+    def weight(self, value):
+        self.base_weight = value

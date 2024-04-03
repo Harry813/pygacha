@@ -9,6 +9,10 @@ class SimpleRarity(GachaRarityBase):
         super().__init__(name)
         self.base_weight = base_weight
 
+    @property
+    def weight(self):
+        return self.base_weight
+
 
 class SimpleItem(GachaItem):
     def __init__(self, name, rarity: SimpleRarity | FlexRarity, inst=None, adjusted_modifier=0):
@@ -17,11 +21,11 @@ class SimpleItem(GachaItem):
 
 class SimpleGacha(GachaPoolBase):
     def _draw_rarity(self):
-        total_weight = sum(rarity.base_weight for rarity in self.rarity_map.keys())
+        total_weight = sum(rarity.weight for rarity in self.rarity_map.keys())
         pick = random.uniform(0, total_weight)
         current = 0
         for rarity in self.rarity_map.keys():
-            current += rarity.base_weight
+            current += rarity.weight
             if current >= pick:
                 return rarity
 
@@ -50,8 +54,3 @@ class SimpleGacha(GachaPoolBase):
 
             for i in not_modified_items:
                 i.adjusted_weight = rest_weight / len(not_modified_items)
-
-    def _draw(self):
-        rarity = self._draw_rarity()
-        item = self._draw_item(rarity)
-        return item
