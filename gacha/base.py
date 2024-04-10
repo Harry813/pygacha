@@ -1,3 +1,4 @@
+import functools
 from abc import ABC, abstractmethod
 
 
@@ -21,11 +22,21 @@ class GachaItem:
 
 
 class GachaRarityBase(ABC):
-    def __init__(self, name):
+    def __init__(self, name, priority: int = 0):
         self.name = name
+        self.priority = priority
 
     def __str__(self):
         return self.name
+
+    def _compare(self, other, op):
+        return op(self.priority, other.priority)
+
+    __gt__ = functools.partialmethod(_compare, op=__gt__)
+    __lt__ = functools.partialmethod(_compare, op=__lt__)
+    __eq__ = functools.partialmethod(_compare, op=__eq__)
+    __ge__ = functools.partialmethod(_compare, op=__ge__)
+    __le__ = functools.partialmethod(_compare, op=__le__)
 
     @property
     @abstractmethod
@@ -98,7 +109,7 @@ class GachaPoolBase(ABC):
 
 class FlexRarity(GachaRarityBase):
     def __init__(self, name):
-        super().__init__(name)
+        super().__init__(name, priority=-999)
         self.base_weight = 0
 
     @property
